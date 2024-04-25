@@ -26,9 +26,9 @@ class Dashboard:
             fluid = True,
             children = [
                 html.Br(),
-                self._header_title("Sales Report"),
+                self._header_title("Sales Report neuvo"),
                 html.Div(html.Hr()),
-                self._header_subtitle("Sales summary financial report"),
+                self._header_subtitle("Sales summary financial report aaa"),
                 html.Br(),
                 self._highlights_cards(),
                 html.Br(),
