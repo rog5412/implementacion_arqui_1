@@ -24,6 +24,6 @@ app = dash.Dash(
 
 app.title = "ETL"
 
-dashboard = Dashboard()
+dashboard = Dashboard(app)
 
 app.layout = dashboard.document()
