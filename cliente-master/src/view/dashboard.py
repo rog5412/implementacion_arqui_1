@@ -20,7 +20,7 @@ from datetime import datetime
 
 class Dashboard:
 
-   def __init__(self, app):
+    def __init__(self, app):
         self.app = app
         self.app.callback(
             [Output("sales-per-date", "figure"), Output("most-selled-products", "children")],
