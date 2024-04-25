@@ -14,13 +14,39 @@
 from src.controller.dashboard_controller import DashboardController
 import dash_bootstrap_components as dbc
 import plotly.express as px
-from dash import dcc, html
+from dash import dcc, html, Output, Input
+from datetime import datetime
+
 
 class Dashboard:
 
-    def __init__(self):
-        pass
+   def __init__(self, app):
+        self.app = app
+        self.app.callback(
+            [Output("sales-per-date", "figure"), Output("most-selled-products", "children")],
+            [Input("date_from", "value"),Input("date_to", "value")]
+        )(self.update_dates)
 
+    def update_dates(self, date_from, date_to):
+        date_from = datetime.strptime(date_from, "%Y-%m-%d") if date_from else datetime(2023, 1, 1)
+        date_to = datetime.strptime(date_to, "%Y-%m-%d") if date_to else datetime(2023, 12, 31)
+        data = DashboardController.load_sales_per_date_range(date_from, date_to)
+        most_selled = DashboardController.load_most_selled_products(date_from, date_to)
+        return (
+            px.bar(data, x="dates", y="sales"),
+            [
+                html.Div(
+                    [
+                        dbc.Row(
+                            [
+                                html.H5(f"- {product['product']} [{product['times']} time(s) sold]" if int(product['times']) > 0 else "- ", style={"font-weight":"bold"}),
+                            ]
+                        ),
+                    ]
+                )
+                for product in most_selled
+            ]
+        )
     def document(self):
         return dbc.Container(
             fluid = True,
