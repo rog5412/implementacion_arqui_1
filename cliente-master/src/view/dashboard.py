@@ -84,6 +84,32 @@ class Dashboard:
                     ]
                 ),
                 html.Br(),
+                # Esto se agrego
+                html.Div(
+                    [
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    dbc.Card(
+                                        [
+                                            dbc.CardBody(
+                                                [
+                                                    html.H3("Sales per date", className="card-title"),
+                                                    dcc.Graph(
+                                                        id='sales-per-date',
+                                                    ),
+                                                ]
+                                            ),
+                                        ]
+                                    ),
+                                    width=12
+                                ),
+                            ]
+                        )
+                    ]
+                ),
+                html.Br(),
+                #
                 html.Div(
                     [
                         dbc.Row(
@@ -126,7 +152,6 @@ class Dashboard:
                         )
                     ]
                 ),
-                html.Br(),
             ]
         )
 
@@ -190,6 +215,30 @@ class Dashboard:
             ]
         )
 
+    # Se agregó esta función
+    def _navbar_dates_picker(self, title: str):
+        return dbc.Navbar(
+            dbc.Container(
+                [
+                    self._header_title(title),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                dbc.Input(id="date_from", type="date")
+                            ),
+                            dbc.Col(
+                                dbc.Input(id="date_to", type="date")
+                            )
+                        ]
+                    ),
+                ]
+            ),
+            class_name="mb-5",
+            dark=True,
+            fixed="top",
+        )
+    #
+    
     def _bar_chart_providers_by_location(self):
         data = DashboardController.load_providers_per_location()
         bar_char_fig = px.bar(data, x="location", y="providers")

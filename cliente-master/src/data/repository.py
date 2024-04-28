@@ -71,7 +71,17 @@ class Repository:
         response = Provider.execute(Queries.get_worst_sales())
         return response
     
+    #@staticmethod
+    #def get_most_selled_products(date_from, date_to):
+    #    response = Provider.execute(Queries.get_most_selled_products(date_from, date_to))
+    #    return response
+
     @staticmethod
     def get_most_selled_products():
         response = Provider.execute(Queries.get_most_selled_products())
         return response
+    
+    #@staticmethod
+    #def get_quantity_products_selled():
+    #    response = Provider.execute(Queries.get_quantity_products_selled())
+    #    return response

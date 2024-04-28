@@ -156,6 +156,21 @@ class Queries:
             }
         """
 
+    #@staticmethod
+    #def get_most_selled_products(date_from, date_to):
+    #    return """
+    #        {
+    #           var(func: has(description)) {
+    #                c as count(bought) @filter(between(date, %s, %s))
+    #           }
+    #                
+    #            response(func: has(description), orderdesc: val(c)){
+    #                description
+    #                times: val(c)
+    #            }
+    #        }
+    #    """ % (date_from.strftime("%Y-%m-%d"), date_to.strftime("%Y-%m-%d"))
+
     @staticmethod
     def get_most_selled_products():
         return """
