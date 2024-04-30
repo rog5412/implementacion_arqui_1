@@ -22,14 +22,16 @@ class Dashboard:
 
     def __init__(self, app):
         self.app = app
+        self.date_from = datetime(2023, 1, 1)
+        self.date_to = datetime(2023, 12, 31)
         self.app.callback(
             [Output("sales-per-date", "figure"), Output("most-selled-products", "children")],
             [Input("date_from", "value"),Input("date_to", "value")]
         )(self.update_dates)
 
     def update_dates(self, date_from, date_to):
-        date_from = datetime.strptime(date_from, "%Y-%m-%d") if date_from else datetime(2023, 1, 1)
-        date_to = datetime.strptime(date_to, "%Y-%m-%d") if date_to else datetime(2023, 12, 31)
+        date_from = datetime.strptime(date_from, "%Y-%m-%d")
+        date_to = datetime.strptime(date_to, "%Y-%m-%d")
         data = DashboardController.load_sales_per_date_range(date_from, date_to)
         most_selled = DashboardController.load_most_selled_products(date_from, date_to)
         return (
@@ -47,14 +49,15 @@ class Dashboard:
                 for product in most_selled
             ]
         )
+    
     def document(self):
         return dbc.Container(
             fluid = True,
             children = [
                 html.Br(),
-                self._header_title("Sales Report neuvo"),
+                self._header_title("Sales Report"),
                 html.Div(html.Hr()),
-                self._header_subtitle("Sales summary financial report aaa"),
+                self._header_subtitle("Sales summary financial report"),
                 html.Br(),
                 self._highlights_cards(),
                 html.Br(),
@@ -85,6 +88,8 @@ class Dashboard:
                 ),
                 html.Br(),
                 # Esto se agrego
+                self._navbar_dates_picker("Selecciona una fecha"),
+                html.Br(),
                 html.Div(
                     [
                         dbc.Row(
@@ -94,7 +99,7 @@ class Dashboard:
                                         [
                                             dbc.CardBody(
                                                 [
-                                                    html.H3("Sales per date", className="card-title"),
+                                                    html.H3("Ventas por fecha", className="card-title"),
                                                     dcc.Graph(
                                                         id='sales-per-date',
                                                     ),
@@ -145,7 +150,7 @@ class Dashboard:
                         dbc.Row(
                             [
                                 dbc.Col(
-                                    self._panel_most_selled_products(),
+                                    self._panel_most_selled_products(self.date_from, self.date_to),
                                     width=12
                                 ),
                             ]
@@ -354,18 +359,21 @@ class Dashboard:
             ]
         )
 
-    def _panel_most_selled_products(self):
-        most_selled = DashboardController.load_most_selled_products()
+    def _panel_most_selled_products(self, date_from, date_to):
+        print (date_from)
+        print (date_to)
+        most_selled = DashboardController.load_most_selled_products(date_from, date_to)
         return html.Div(
             [
                 dbc.Card(
                     [
                         dbc.CardBody(
                             [
-                                html.H3("Most selled", className="card-title"),
+                                html.H3("Most selled products", className="card-title"),
                                 html.Br(),
                                 html.Div(
-                                    [
+                                    id ='most-selled-products',
+                                    children=[
                                         html.Div(
                                             [
                                                 dbc.Row(

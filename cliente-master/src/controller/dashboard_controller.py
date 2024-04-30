@@ -202,27 +202,9 @@ class DashboardController:
             })
         return result
 
-    @staticmethod
-    def load_most_selled_products():
-        response = Repository.get_most_selled_products()
-        if response.status_code != 200:
-            return []
-        result = []
-        json_response = json.loads(response.text)
-
-        assert('data' in json_response.keys())
-        assert('response' in json_response['data'].keys())
-
-        for product in json_response["data"]["response"][0:5]:
-            result.append({
-                "product": product["description"],
-                "times": product["times"]
-            })
-        return result
-    
     #@staticmethod
-    #def load_most_selled_products(date_from=datetime(2023, 1, 1), date_to=datetime(2023, 12, 31)):
-    #    response = Repository.get_most_selled_products(date_from, date_to)
+    #def load_most_selled_products():
+    #    response = Repository.get_most_selled_products()
     #    if response.status_code != 200:
     #        return []
     #    result = []
@@ -239,7 +221,26 @@ class DashboardController:
     #    return result
     
     @staticmethod
-    def load_sales_per_date_range(date_from=datetime(2023, 1, 1), date_to=datetime(2024, 12, 31)):
+    def load_most_selled_products(date_from, date_to):
+        response = Repository.get_most_selled_products(date_from, date_to)
+        if response is not None:
+            if response.status_code != 200:
+                return []
+            result = []
+            json_response = json.loads(response.text)
+
+            assert('data' in json_response.keys())
+            assert('response' in json_response['data'].keys())
+
+            for product in json_response["data"]["response"][0:5]:
+                result.append({
+                    "product": product["description"],
+                    "times": product["times"]
+                })
+            return result
+    
+    @staticmethod
+    def load_sales_per_date_range(date_from, date_to):
         response = Repository.get_sales_by_date_range(date_from, date_to)
         if response.status_code != 200:
             return {
