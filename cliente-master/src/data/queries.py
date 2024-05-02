@@ -158,22 +158,18 @@ class Queries:
 
     @staticmethod
     def get_most_selled_products(date_from, date_to):
-        if date_from is None or date_from is None:
-            return "No hay fechas validas"
-        
-        else:
-            return """
-                {
-                    var(func: has(description)) {
-                        c as count(bought) @filter(between(date, %s, %s))
-                    }
-                    
-                    response(func: has(description), orderdesc: val(c)){
-                        description
-                        times: val(c)
-                    }
+        return """
+            {
+                var(func: has(description)) {
+                    c as count(bought) @filter(between(date, %s, %s))
                 }
-            """ % (date_from.strftime("%Y-%m-%d"), date_to.strftime("%Y-%m-%d"))
+                    
+                response(func: has(description), orderdesc: val(c)){
+                    description
+                    times: val(c)
+                }
+            }
+        """ % (date_from.strftime("%Y-%m-%d"), date_to.strftime("%Y-%m-%d"))
 
     #@staticmethod
     #def get_most_selled_products():
@@ -189,3 +185,13 @@ class Queries:
     #            }
     #        }
     #    """
+
+    def get_quantity_products_selled():
+        return """
+            {
+                response(func: has(invoice),orderasc: <date>){
+                        quantity
+                        date
+                }
+            }
+        """

@@ -25,35 +25,42 @@ class Dashboard:
         self.date_from = datetime(2023, 1, 1)
         self.date_to = datetime(2023, 12, 31)
         self.app.callback(
-            [Output("sales-per-date", "figure"), Output("most-selled-products", "children")],
-            [Input("date_from", "value"),Input("date_to", "value")]
+            [Output("sales-per-date", "figure")], #Output("most-selled-products","children")],
+            [Input("date_from", "date"), Input("date_to", "date")]
         )(self.update_dates)
 
     def update_dates(self, date_from, date_to):
-        date_from = datetime.strptime(date_from, "%Y-%m-%d")
-        date_to = datetime.strptime(date_to, "%Y-%m-%d")
+        date_from = date_from.split("T")[0]
+        date_to = date_to.split("T")[0]
+        date_from =  datetime.strptime(date_from,"%Y-%m-%d")
+        date_to = datetime.strptime(date_to,"%Y-%m-%d")
+        print("formato de las fechas")
+        print(date_from)
         data = DashboardController.load_sales_per_date_range(date_from, date_to)
-        most_selled = DashboardController.load_most_selled_products(date_from, date_to)
+        #most_selled = DashboardController.load_most_selled_products(date_from, date_to)
+        print("Contenido de data")
+        print(data)
         return (
             px.bar(data, x="dates", y="sales"),
-            [
-                html.Div(
-                    [
-                        dbc.Row(
-                            [
-                                html.H5(f"- {product['product']} [{product['times']} time(s) sold]" if int(product['times']) > 0 else "- ", style={"font-weight":"bold"}),
-                            ]
-                        ),
-                    ]
-                )
-                for product in most_selled
-            ]
+            #[
+            #    html.Div(
+            #        [
+            #            dbc.Row(
+            #                [
+            #                    html.H5(f"- {product['product']} [{product['times']} time(s) sold]" if int(product['times']) > 0 else "- ", style={"font-weight":"bold"}),
+            #                ]
+            #            ),
+            #        ]
+            #    )
+            #    for product in most_selled
+            #]
         )
-    
+
     def document(self):
         return dbc.Container(
             fluid = True,
             children = [
+                self._navbar_dates_picker("Pick the dates"),
                 html.Br(),
                 self._header_title("Sales Report"),
                 html.Div(html.Hr()),
@@ -87,9 +94,6 @@ class Dashboard:
                     ]
                 ),
                 html.Br(),
-                # Esto se agrego
-                self._navbar_dates_picker("Selecciona una fecha"),
-                html.Br(),
                 html.Div(
                     [
                         dbc.Row(
@@ -114,7 +118,6 @@ class Dashboard:
                     ]
                 ),
                 html.Br(),
-                #
                 html.Div(
                     [
                         dbc.Row(
@@ -150,11 +153,12 @@ class Dashboard:
                         dbc.Row(
                             [
                                 dbc.Col(
-                                    self._panel_most_selled_products(self.date_from, self.date_to),
+                                    self._panel_most_selled_products(),
                                     width=12
                                 ),
                             ]
                         )
+                        
                     ]
                 ),
             ]
@@ -176,6 +180,7 @@ class Dashboard:
                 ),
             ],
             id="blurb",
+            style={"margin-top": "100px"}
         )
 
     def _card_value(self, label, value):
@@ -229,10 +234,10 @@ class Dashboard:
                     dbc.Row(
                         [
                             dbc.Col(
-                                dbc.Input(id="date_from", type="date")
+                                dcc.DatePickerSingle(id="date_from", date = datetime(2023, 1, 1))
                             ),
                             dbc.Col(
-                                dbc.Input(id="date_to", type="date")
+                                dcc.DatePickerSingle(id="date_to", date = datetime(2023, 12, 31))
                             )
                         ]
                     ),
@@ -359,37 +364,33 @@ class Dashboard:
             ]
         )
 
-    def _panel_most_selled_products(self, date_from, date_to):
-        print (date_from)
-        print (date_to)
-        most_selled = DashboardController.load_most_selled_products(date_from, date_to)
+    def _panel_most_selled_products(self):
+        most_selled = DashboardController.load_most_selled_products(self.date_from, self.date_to)
         return html.Div(
-            [
+            id='most-selled-products',
+            children=[
                 dbc.Card(
-                    [
-                        dbc.CardBody(
-                            [
-                                html.H3("Most selled products", className="card-title"),
-                                html.Br(),
-                                html.Div(
-                                    id ='most-selled-products',
-                                    children=[
-                                        html.Div(
-                                            [
-                                                dbc.Row(
-                                                    [
-                                                        html.H5(f"- {product['product']} [{product['times']} time(s) sold]", style={"font-weight":"bold"}),
-                                                    ]
-                                                ),
-                                            ]
-                                        )
+                    dbc.CardBody(
+                        [
+                            html.H3("Most selled", className="card-title"),
+                            html.Br(),
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            dbc.Row(
+                                                [
+                                                    html.H5(f"- {product['product']} [{product['times']} time(s) sold]", style={"font-weight":"bold"}),
+                                                ]
+                                            ),
+                                        ]
+                                    )
 
-                                        for product in most_selled
-                                    ]
-                                )
-                            ]
-                        )
-                    ]
+                                    for product in most_selled
+                                ]
+                            )
+                        ]
+                    )
                 )
             ]
         )

@@ -81,7 +81,7 @@ class Repository:
     #    response = Provider.execute(Queries.get_most_selled_products())
     #    return response
     
-    #@staticmethod
-    #def get_quantity_products_selled():
-    #    response = Provider.execute(Queries.get_quantity_products_selled())
-    #    return response
+    @staticmethod
+    def get_quantity_products_selled():
+        response = Provider.execute(Queries.get_quantity_products_selled())
+        return response
