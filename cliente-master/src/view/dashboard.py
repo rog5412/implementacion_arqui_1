@@ -25,7 +25,7 @@ class Dashboard:
         self.date_from = datetime(2024, 1, 1).date()
         self.date_to = datetime(2024, 12, 31).date()
         self.app.callback(
-            [Output("sales-per-date", "figure")], #Output("most-selled-products","children")],
+            [Output("sales-per-date", "figure"), Output("most-selled-products","children")],#,Output("sales-per-location","figure")],
             [Input("date_from", "date"), Input("date_to", "date")]
         )(self.update_dates)
 
@@ -34,36 +34,44 @@ class Dashboard:
         date_to = date_to.split("T")[0]
         date_from =  datetime.strptime(date_from,"%Y-%m-%d")
         date_to = datetime.strptime(date_to,"%Y-%m-%d")
-        print("formato de las fechas")
-        print(date_from)
-        print(date_to)
-        data = DashboardController.load_sales_per_date_range(date_from, date_to)
-        #most_selled = DashboardController.load_most_selled_products(date_from, date_to)
-        print("Contenido de data")
-        print(data)
+        data_sales = DashboardController.load_sales_per_date_range(date_from, date_to)
+        most_selled = DashboardController.load_most_selled_products(date_from, date_to)
         return (
-            px.bar(data, x="dates", y="sales"),
-            #[
-            #    html.Div(
-            #        [
-            #            dbc.Row(
-            #                [
-            #                    html.H5(f"- {product['product']} [{product['times']} time(s) sold]" if int(product['times']) > 0 else "- ", style={"font-weight":"bold"}),
-            #                ]
-            #            ),
-            #        ]
-            #    )
-            #    for product in most_selled
-            #]
+            px.bar(data_sales, x="dates", y="sales"),
+            dbc.Card(
+                dbc.CardBody(
+                    [
+                        html.H3("Más vendido por fecha", className="card-title"),
+                        html.Br(),
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        dbc.Row(
+                                            [
+                                                html.H5(f"- {product['product']} [{product['times']} time(s) sold]", style={"font-weight":"bold"}),
+                                            ]
+                                        ),
+                                    ]
+                                )
+
+                                for product in most_selled
+                            ]
+                        )
+                    ]
+                )
+            )#,self._bar_chart_sales_per_location_by_date()
+
         )
 
     def document(self):
         return dbc.Container(
             fluid = True,
             children = [
-                self._navbar_dates_picker("Pick the dates"),
+                self._navbar_dates_picker("Reporte de ventas"),
                 html.Br(),
-                self._header_title("Sales Report"),
+                self._header_title(""),
+                html.Br(),
                 html.Div(html.Hr()),
                 self._header_subtitle("Sales summary financial report"),
                 html.Br(),
@@ -104,7 +112,7 @@ class Dashboard:
                                         [
                                             dbc.CardBody(
                                                 [
-                                                    html.H3("Ventas por fecha", className="card-title"),
+                                                    html.H3("Reporte de ventas por fecha", className="card-title"),
                                                     dcc.Graph(
                                                         id='sales-per-date',
                                                     ),
@@ -235,10 +243,22 @@ class Dashboard:
                     dbc.Row(
                         [
                             dbc.Col(
-                                dcc.DatePickerSingle(id="date_from", date = datetime(2024, 1, 1).date())
+                                [
+                                    html.H2("Desde:", className = "lead"),
+                                    dcc.DatePickerSingle(id="date_from", 
+                                                         date = datetime(2024, 1, 1).date(),
+                                                         min_date_allowed=datetime(2024, 1, 1).date(),
+                                                         max_date_allowed=datetime(2024, 12, 31).date())
+                                ]
                             ),
                             dbc.Col(
-                                dcc.DatePickerSingle(id="date_to", date = datetime(2024, 12, 31).date())
+                                [
+                                    html.H2("Hasta:", className = "lead"),
+                                    dcc.DatePickerSingle(id="date_to", 
+                                                         date = datetime(2024, 12, 31).date(),
+                                                         min_date_allowed=datetime(2024, 1, 1).date(),
+                                                         max_date_allowed=datetime(2024, 12, 31).date())
+                                ]
                             )
                         ]
                     ),
@@ -269,6 +289,23 @@ class Dashboard:
 
     def _bar_chart_sales_per_location(self):
         data = DashboardController.load_sales_per_location()
+        bar_char_fig = px.bar(data, x="location", y="sales")
+        return dbc.Card(
+            [
+                dbc.CardBody(
+                    [
+                        html.H3("Sales per location", className="card-title"),
+                        dcc.Graph(
+                            id='sales-per-location',
+                            figure=bar_char_fig
+                        ),
+                    ]
+                ),
+            ]
+        )
+    
+    def _bar_chart_sales_per_location_by_date(self):
+        data = DashboardController.load_sales_per_location(self.date_from, self.date_to)
         bar_char_fig = px.bar(data, x="location", y="sales")
         return dbc.Card(
             [
@@ -373,7 +410,7 @@ class Dashboard:
                 dbc.Card(
                     dbc.CardBody(
                         [
-                            html.H3("Most selled", className="card-title"),
+                            html.H3("Most selled by date", className="card-title"),
                             html.Br(),
                             html.Div(
                                 [
