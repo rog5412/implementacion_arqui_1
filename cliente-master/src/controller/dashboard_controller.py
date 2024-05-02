@@ -221,7 +221,7 @@ class DashboardController:
     #    return result
     
     @staticmethod
-    def load_most_selled_products(date_from=datetime(2023, 1, 1), date_to=datetime(2023, 12, 31)):
+    def load_most_selled_products(date_from, date_to):
         response = Repository.get_most_selled_products(date_from, date_to)
         if response is not None:
             if response.status_code != 200:
@@ -240,7 +240,7 @@ class DashboardController:
             return result
     
     @staticmethod
-    def load_sales_per_date_range(date_from=datetime(2023, 1, 1), date_to=datetime(2023, 12, 31)):
+    def load_sales_per_date_range(date_from, date_to):
         response = Repository.get_sales_by_date_range(date_from, date_to)
         if response.status_code != 200:
             return {
