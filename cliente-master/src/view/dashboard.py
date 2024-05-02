@@ -22,8 +22,8 @@ class Dashboard:
 
     def __init__(self, app):
         self.app = app
-        self.date_from = datetime(2023, 1, 1)
-        self.date_to = datetime(2023, 12, 31)
+        self.date_from = datetime(2024, 1, 1).date()
+        self.date_to = datetime(2024, 12, 31).date()
         self.app.callback(
             [Output("sales-per-date", "figure")], #Output("most-selled-products","children")],
             [Input("date_from", "date"), Input("date_to", "date")]
@@ -36,6 +36,7 @@ class Dashboard:
         date_to = datetime.strptime(date_to,"%Y-%m-%d")
         print("formato de las fechas")
         print(date_from)
+        print(date_to)
         data = DashboardController.load_sales_per_date_range(date_from, date_to)
         #most_selled = DashboardController.load_most_selled_products(date_from, date_to)
         print("Contenido de data")
@@ -234,10 +235,10 @@ class Dashboard:
                     dbc.Row(
                         [
                             dbc.Col(
-                                dcc.DatePickerSingle(id="date_from", date = datetime(2023, 1, 1))
+                                dcc.DatePickerSingle(id="date_from", date = datetime(2024, 1, 1).date())
                             ),
                             dbc.Col(
-                                dcc.DatePickerSingle(id="date_to", date = datetime(2023, 12, 31))
+                                dcc.DatePickerSingle(id="date_to", date = datetime(2024, 12, 31).date())
                             )
                         ]
                     ),

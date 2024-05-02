@@ -102,9 +102,9 @@ class Queries:
         {
             response(func:has(date)) @filter(between(date, %s, %s)){
                 date
-                sold: ~bougth {
+                sold: ~bought {
                     price
-                    quantity: count(bougth)
+                    quantity: count(bought)
                 }
             }
         }
